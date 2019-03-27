@@ -1,0 +1,37 @@
+nginx:
+    container_name: customentities_nginx
+    build: ./docker/nginx
+    ports:
+        - "80:80"
+        - "443:443"
+    links:
+        - phpfpm:nginx
+        - mysql:nginx
+    volumes:
+        - ./magento:/var/www/html
+    hostname: docker.customentities.com
+
+phpfpm:
+    container_name: customentities_phpfpm7
+    build: ./docker/php-fpm
+    ports:
+        - "9001:9001"
+    links:
+        - mysql:phpfpm
+    volumes:
+        - ./magento:/var/www/html
+    environment:
+        - PHP_IDE_CONFIG="serverName=Docker"
+
+mysql:
+    container_name: customentities_mysql
+    image: mysql:5.6
+    ports:
+        - "3306:3306"
+    volumes:
+        - ./mysql-data:/var/lib/mysql
+    environment:
+        - MYSQL_ROOT_PASSWORD=1234
+        - MYSQL_PASSWORD=1234
+        - MYSQL_DATABASE=customentities
+        - MYSQL_USER=admin
